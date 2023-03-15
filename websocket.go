@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -19,12 +20,14 @@ func (s *Server) HandleConnection(w http.ResponseWriter, r *http.Request) {
 
 	user, err := s.Database.GetUser(username)
 	if err != nil {
+		log.Printf("Error: %v", err)
 		_ = conn.WriteMessage(websocket.CloseMessage, []byte("Invalid username or password"))
 		conn.Close()
 		return
 	}
 
 	if user.Password != password {
+		log.Printf("Error: %v", err)
 		_ = conn.WriteMessage(websocket.CloseMessage, []byte("Invalid username or password"))
 		conn.Close()
 		return
@@ -48,6 +51,7 @@ func (s *Server) ReadMessages(user *User) {
 		if err != nil {
 			return
 		}
+		log.Printf("Received message from %s: %s", user.Username, msg) // Add this log statement
 
 		message, err := parseMessage(msg)
 		if err != nil {
@@ -69,14 +73,3 @@ func parseMessage(msg []byte) (*Message, error) {
 	return &message, nil
 }
 
-// func createMessage(msgType string, data map[string]interface{}) ([]byte, error) {
-// 	message := &Message{
-// 		Type: msgType,
-// 		Data: data,
-// 	}
-// 	msg, err := json.Marshal(message)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create message: %v", err)
-// 	}
-// 	return msg, nil
-// }

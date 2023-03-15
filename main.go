@@ -32,6 +32,9 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		server.HandleConnection(w, r)
 	})
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		server.HandleRegistration(w, r)
+	})
 	fmt.Println("Starting server on", listenAddress)
 	if err := http.ListenAndServe(listenAddress, nil); err != nil {
 		panic(fmt.Sprintf("Failed to start the server: %v", err))
